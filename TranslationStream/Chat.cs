@@ -79,16 +79,13 @@ namespace TranslationStream
 
                 var response = await _chatGpt.GetResponseAsync(Constants.CHATGPT_MODEL, Constants.CHATGPT_PROMPT, $"{Language}|{content}");
 
-                if(response == null) return;
+                if (response == null) return;
 
                 ChatGPTResponse? chatGPTResponse = JsonConvert.DeserializeObject<ChatGPTResponse>(response);
 
                 if(chatGPTResponse == null) return;
 
-                Stopwatch watch = Stopwatch.StartNew();
                 bool convertTextToSpeech = await _textToSpeech.GetResponseAsync(chatGPTResponse.choices[0].message.content);
-                watch.Stop();
-                Console.WriteLine($"Timings: {watch.ElapsedMilliseconds}");
 
                 if (!convertTextToSpeech) return;
 

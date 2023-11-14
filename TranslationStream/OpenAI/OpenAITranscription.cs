@@ -16,7 +16,7 @@ namespace TranslationStream.OpenAI
         public OpenAITranscription()
         {
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.API_KEY);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.Config.OpenAIKey);
         }
 
         public async Task<string?> TranscribeAudioAsync(string filePath, string language)

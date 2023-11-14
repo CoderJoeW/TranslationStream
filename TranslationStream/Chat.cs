@@ -147,18 +147,6 @@ namespace TranslationStream
                 }
                 Thread.Sleep(100);
             }
-            
-            
-            //string? input = Console.ReadLine();
-            //while (string.IsNullOrEmpty(input))
-            //{
-            //    Console.WriteLine("We did not capture any input please retry:");
-            //    input = Console.ReadLine();
-            //}
-            //
-            //RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{input}");
-            //
-            //ChatLoop();
         }
     }
 }

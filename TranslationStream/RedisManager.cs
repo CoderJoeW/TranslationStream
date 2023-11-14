@@ -25,7 +25,7 @@ namespace TranslationStream
 
         private ConnectionMultiplexer _redis;
 
-        private readonly string _redisHost = "epicgamersunited.com";
+        private readonly string _redisHost = Constants.Config.RedisEndpoint;
         private readonly int _redisPort = 6379;
 
         public ISubscriber Subscriber;

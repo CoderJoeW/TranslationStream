@@ -99,53 +99,57 @@ namespace TranslationStream
         public async void ChatLoop()
         {
             Console.WriteLine("Press and hold the spacebar to record audio. Release to stop recording.");
+            
             while (true)
             {
+                await Task.Delay(100);
+
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                    if(keyInfo.Key == ConsoleKey.Spacebar)
+                    if (keyInfo.Key != ConsoleKey.Spacebar) continue;
+
+                    if (!_audioRecording.IsRecording)
                     {
-                        if (!_audioRecording.IsRecording)
+                        _audioRecording.StartRecording();
+                    }
+                    else
+                    {
+                        _audioRecording.StopRecording();
+
+                        while (_audioRecording.IsRecording)
                         {
-                            _audioRecording.StartRecording();
+                            Console.WriteLine("Waiting for audio to finish recording");
+                            await Task.Delay(100);
                         }
-                        else
-                        {
-                            if (_audioRecording.IsRecording)
-                            {
-                                _audioRecording.StopRecording();
 
-                                while(_audioRecording.IsRecording)
-                                {
-                                    Console.WriteLine("Waiting for audio to finish recording");
-                                }
-
-                                if (!string.IsNullOrEmpty(Language))
-                                {
-                                    string? input = await _textTranscription.TranscribeAudioAsync("audio.wav", Language);
-
-                                    if (input != null)
-                                    {
-                                        Console.WriteLine(input);
-
-                                        OpenAITranscriptionResponse? res = JsonConvert.DeserializeObject<OpenAITranscriptionResponse>(input);
-
-                                        if (res != null)
-                                        {
-                                            RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{res.text}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("input was null");
-                                    }
-                                }
-                            }
-                        }
+                        TranscribeAndPublishAudio();
                     }
                 }
-                Thread.Sleep(100);
+            }
+        }
+
+        private async void TranscribeAndPublishAudio()
+        {
+            if (!string.IsNullOrEmpty(Language))
+            {
+                string? input = await _textTranscription.TranscribeAudioAsync("audio.wav", Language);
+
+                if (input != null)
+                {
+                    Console.WriteLine(input);
+
+                    OpenAITranscriptionResponse? res = JsonConvert.DeserializeObject<OpenAITranscriptionResponse>(input);
+
+                    if (res != null)
+                    {
+                        RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{res.text}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("input was null");
+                }
             }
         }
     }

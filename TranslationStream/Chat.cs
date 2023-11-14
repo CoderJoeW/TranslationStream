@@ -129,27 +129,23 @@ namespace TranslationStream
             }
         }
 
-        private async void TranscribeAndPublishAudio()
+        private async Task TranscribeAndPublishAudio()
         {
-            if (!string.IsNullOrEmpty(Language))
+            if (string.IsNullOrEmpty(Language))
             {
-                string? input = await _textTranscription.TranscribeAudioAsync("audio.wav", Language);
+                Console.WriteLine("Language is not set");
+                return;
+            }
 
-                if (input != null)
-                {
-                    Console.WriteLine(input);
+            string? input = await _textTranscription.TranscribeAudioAsync("audio.wav", Language);
 
-                    OpenAITranscriptionResponse? res = JsonConvert.DeserializeObject<OpenAITranscriptionResponse>(input);
+            if (input == null) return;
 
-                    if (res != null)
-                    {
-                        RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{res.text}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("input was null");
-                }
+            OpenAITranscriptionResponse? res = JsonConvert.DeserializeObject<OpenAITranscriptionResponse>(input);
+
+            if (res != null)
+            {
+                RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{res.text}");
             }
         }
     }

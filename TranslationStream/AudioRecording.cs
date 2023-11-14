@@ -13,15 +13,18 @@ namespace TranslationStream
 
         private WaveInEvent _waveSource = null;
         private WaveFileWriter _waveFile = null;
+        private string _fileName = "audio.wav";
 
         private bool _waveSourceHasStopped = false;
 
-        public AudioRecording()
+        public void Init()
         {
             _waveSource = new WaveInEvent();
             _waveSource.WaveFormat = new WaveFormat(44100, 1);
             _waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
             _waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
+
+            _waveFile = new WaveFileWriter(_fileName, _waveSource.WaveFormat);
         }
 
         public void StartRecording()
@@ -29,8 +32,7 @@ namespace TranslationStream
             IsRecording = true;
             _waveSourceHasStopped = false;
 
-            string fileName = "audio.wav";
-            _waveFile = new WaveFileWriter(fileName, _waveSource.WaveFormat);
+            Init();
 
             _waveSource.StartRecording();
 

@@ -145,6 +145,7 @@ namespace TranslationStream
 
             if (res != null)
             {
+                Console.WriteLine(input);
                 RedisManager.Instance.Subscriber.Publish(Channel, $"{Username}~{res.text}");
             }
         }
